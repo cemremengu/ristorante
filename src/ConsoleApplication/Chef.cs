@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
 
     public class Chef
     {
@@ -17,6 +18,8 @@
 
         public void CookOrder(Order order)
         {
+            Thread.Sleep(3000);
+
             foreach (var item in order.OrderItems)
             {
                 item.Price = _prices[item.Name];
