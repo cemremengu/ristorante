@@ -1,2 +1,2 @@
-# onion
-A sample project demonstrating onion architecture, DDD, CQRS and ES
+# Ristorante
+A sample project based on Greg Young's famous restaurant example demonstrating DDD, CQRS and ES
