@@ -1,6 +1,5 @@
 ﻿namespace ConsoleApplication
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using Newtonsoft.Json;
@@ -21,11 +20,10 @@
         public List<OrderItem> OrderItems { get; set; } // waiter, cashier, chef
     }
 
-    public class WaiterOrder: OrderDocument
+    public class WaiterOrder : OrderDocument
     {
         public WaiterOrder()
         {
-            
         }
 
         public WaiterOrder(string waiterName, int tableNumber)
@@ -42,7 +40,7 @@
         {
             get { return Get(nameof(WaiterName)).Value<string>(); }
 
-            private set { Set(nameof(WaiterName), new JValue(value));}
+            private set { Set(nameof(WaiterName), new JValue(value)); }
         } // waiter
 
         public int TableNumber
@@ -52,14 +50,14 @@
             private set { Set(nameof(TableNumber), new JValue(value)); }
         } // waiter, cashier
 
+        private JArray Items { get; }
+
         public void AddOrderItem(string name, int quantity)
         {
             Items.Add(new WaiterOrderItem(name, quantity).AsJson());
         }
 
-        private JArray Items { get; set; }
-
-        private class WaiterOrderItem: OrderDocument
+        private class WaiterOrderItem : OrderDocument
         {
             public WaiterOrderItem(string name, int quantity)
             {
@@ -80,24 +78,18 @@
 
                 private set { Set(nameof(Quantity), new JValue(value)); }
             } // waiter, cashier
-
-
         }
-
     }
 
     public class ChefOrder : OrderDocument, IEnumerable<ChefOrderItem>
     {
-       
         public IEnumerator<ChefOrderItem> GetEnumerator()
         {
-            var items = new JArray();
-
-            items = (JArray) this.json["Items"];
+            var items = (JArray) json["Items"];
 
             foreach (JObject item in items)
             {
-                yield return OrderDocument.FromJson<ChefOrderItem>(item);
+                yield return FromJson<ChefOrderItem>(item);
             }
         }
 
@@ -105,11 +97,9 @@
         {
             return ((IEnumerable<ChefOrderItem>) this).GetEnumerator();
         }
-
-
     }
 
-    public class ChefOrderItem: OrderDocument
+    public class ChefOrderItem : OrderDocument
     {
         public decimal Price
         {
@@ -122,16 +112,21 @@
 
     public class OrderDocument
     {
-        public JObject AsJson()
+        protected JObject json;
+
+        public OrderDocument()
         {
-            return  JObject.Parse(json.ToString()); // prevent people from fiddling with json object.
+            json = new JObject();
         }
 
-        protected JObject json;
+        public JObject AsJson()
+        {
+            return JObject.Parse(json.ToString()); // prevent people from fiddling with json object.
+        }
 
         public T Get<T>(string name) where T : OrderDocument, new()
         {
-            return FromJson<T>((JObject)json[name]);
+            return FromJson<T>((JObject) json[name]);
         }
 
         public void Set<T>(string name, T value) where T : OrderDocument
@@ -144,32 +139,23 @@
             return (JValue) json[name];
         }
 
-        public void Set (string name, JValue value)
+        public void Set(string name, JValue value)
         {
             json[name] = value;
         }
 
-        public OrderDocument()
+
+        public static T FromJson<T>(JObject json) where T : OrderDocument, new()
         {
-            this.json = new JObject();
-        }
-
-
-        public static T FromJson<T>(JObject json) where T: OrderDocument, new()
-        {
-            var t = new T();
-
-            t.json = json;
-
-            return t;
+            return new T { json = json }; ;
         }
 
         public override string ToString()
         {
-           return this.json.ToString(Formatting.Indented);
+            return json.ToString(Formatting.Indented);
         }
     }
-    
+
 
     public class OrderItem
     {
@@ -187,6 +173,4 @@
 
         public decimal Price { get; set; } // chef
     }
-
-
 }
