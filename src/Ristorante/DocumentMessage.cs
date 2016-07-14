@@ -19,7 +19,6 @@
 
         protected virtual void Validate()
         {
-            
         }
 
         protected T Get<T>(string name) where T : DocumentMessage, new()

@@ -4,29 +4,39 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Threading;
+    using Infrastructure;
+    using Messages;
     using Newtonsoft.Json.Linq;
 
-    public class Chef
+    public class Chef : IHandle<CookOrder>
     {
+        private readonly short _cookingTime;
         private readonly Dictionary<string, decimal> _prices;
+        private readonly IPublish _publish;
 
-        public Chef(Dictionary<string, decimal> prices)
+        public Chef(Dictionary<string, decimal> prices, short cookingTime, IPublish publish)
         {
             _prices = prices;
+
+            _cookingTime = cookingTime;
+            _publish = publish;
         }
 
-        public void CookOrder(DocumentMessage order)
-        {
-            Thread.Sleep(500);
 
-            foreach (var item in order.To<ChefOrder>())
+        public void Handle(CookOrder message)
+        {
+            Thread.Sleep(_cookingTime);
+
+            foreach (var item in message.Order.To<ChefOrder>())
             {
                 item.Price = _prices[item.Name];
             }
 
-            Console.WriteLine("Cooked the order and notified the manager...");
-        }
 
+            Console.WriteLine("Cooked the order and notified the manager...");
+
+            _publish.Publish(new OrderCooked(message.Order));
+        }
 
         private class ChefOrderItem : DocumentMessage
         {

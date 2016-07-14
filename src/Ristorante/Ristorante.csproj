@@ -50,16 +50,27 @@
     <Compile Include="Cashier.cs" />
     <Compile Include="Chef.cs" />
     <Compile Include="Customer.cs" />
+    <Compile Include="Infrastructure\Dispatcher.cs" />
+    <Compile Include="Infrastructure\InMemoryBus.cs" />
+    <Compile Include="IRestaurantProcess.cs" />
     <Compile Include="Manager.cs" />
     <Compile Include="DocumentMessage.cs" />
+    <Compile Include="Messages\ChefMessages.cs" />
+    <Compile Include="Messages\CashierMessages.cs" />
+    <Compile Include="Messages\CustomerMessages.cs" />
+    <Compile Include="Messages\ManagerMessages.cs" />
+    <Compile Include="Messages\WaiterMessages.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TurkishOrderProcessManager.cs" />
     <Compile Include="Waiter.cs" />
+    <Compile Include="ZimbabweProcessManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -4,13 +4,20 @@
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
+    using Infrastructure;
+    using Messages;
     using Newtonsoft.Json.Linq;
 
-    public class Manager
+    public class Manager : IHandle<RecordOrder>, IHandle<ReportProfit>
     {
         private readonly List<ManagerOrder> dailyOrders = new List<ManagerOrder>();
 
-        public void ReportProfit()
+        public void Handle(RecordOrder message)
+        {
+            dailyOrders.Add(message.Order.To<ManagerOrder>());
+        }
+
+        public void Handle(ReportProfit message)
         {
             var dailyTotal = 0m;
 
@@ -26,11 +33,6 @@
                 $"Generating a report...Payments received ${dailyTotal}, Total cost ${totalCost}, Total profit ${dailyTotal - totalCost}");
         }
 
-
-        public void RecordOrder(DocumentMessage order)
-        {
-            dailyOrders.Add(order.To<ManagerOrder>());
-        }
 
         private class ManagerOrder : DocumentMessage, IEnumerable<ManagerOrderItem>
         {
