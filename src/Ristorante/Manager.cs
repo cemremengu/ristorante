@@ -1,26 +1,69 @@
 ﻿namespace Ristorante
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Newtonsoft.Json.Linq;
 
     public class Manager
     {
-        private decimal dailyTotal;
-
-        private decimal totalCost;
+        private readonly List<ManagerOrder> dailyOrders = new List<ManagerOrder>();
 
         public void ReportProfit()
         {
-            Console.WriteLine($"Generating a report...Payments received ${dailyTotal}, Total cost ${totalCost}, Total profit ${dailyTotal - totalCost}");
+            var dailyTotal = 0m;
+
+            var totalCost = 0m;
+
+            foreach (var item in dailyOrders.SelectMany(x => x))
+            {
+                totalCost += item.Cost*item.Quantity;
+
+                dailyTotal += item.Price*item.Quantity;
+            }
+            Console.WriteLine(
+                $"Generating a report...Payments received ${dailyTotal}, Total cost ${totalCost}, Total profit ${dailyTotal - totalCost}");
         }
 
-        public void RecordPayment(decimal total)
+
+        public void RecordOrder(DocumentMessage order)
         {
-            dailyTotal += total;
+            dailyOrders.Add(order.To<ManagerOrder>());
         }
 
-        public void RecordCost(decimal cost)
+        private class ManagerOrder : DocumentMessage, IEnumerable<ManagerOrderItem>
         {
-            totalCost += cost;
+            public ManagerOrder()
+            {
+                Items = new JArray();
+            }
+
+            private JArray Items { get; }
+
+            public IEnumerator<ManagerOrderItem> GetEnumerator()
+            {
+                var items = (JArray) json[nameof(Items)];
+
+                foreach (JObject item in items)
+                {
+                    yield return FromJson<ManagerOrderItem>(item);
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        private class ManagerOrderItem : DocumentMessage
+        {
+            public decimal Cost => Get("Price").Value<decimal>();
+
+            public decimal Price => Get("Cost").Value<decimal>();
+
+            public int Quantity => Get(nameof(Quantity)).Value<int>();
         }
     }
 }

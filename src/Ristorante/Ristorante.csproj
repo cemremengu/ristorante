@@ -51,8 +51,7 @@
     <Compile Include="Chef.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="Manager.cs" />
-    <Compile Include="Order.cs" />
-    <Compile Include="OrderItem.cs" />
+    <Compile Include="DocumentMessage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Waiter.cs" />

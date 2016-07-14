@@ -1,7 +1,6 @@
 ﻿namespace Ristorante
 {
     using System;
-    using System.Collections.Generic;
     using Newtonsoft.Json.Linq;
 
     public class Waiter
@@ -40,6 +39,15 @@
         {
             public WaiterOrder()
             {
+            }
+
+            protected override void Validate()
+            {
+                JToken ignored;
+                if (!json.TryGetValue(nameof(TableNumber), out ignored))
+                {
+                    throw new Exception("Missing TableNumber");
+                }
             }
 
             public WaiterOrder(string waiterName, int tableNumber)

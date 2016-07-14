@@ -17,6 +17,11 @@
             return JObject.Parse(json.ToString()); // prevent people from fiddling with json object.
         }
 
+        protected virtual void Validate()
+        {
+            
+        }
+
         protected T Get<T>(string name) where T : DocumentMessage, new()
         {
             return FromJson<T>((JObject) json[name]);
@@ -39,7 +44,11 @@
 
         public T To<T>() where T : DocumentMessage, new()
         {
-            return FromJson<T>(json);
+            var result = FromJson<T>(json);
+
+            result.Validate();
+
+            return result;
         }
 
         public static T FromJson<T>(JObject json) where T : DocumentMessage, new()

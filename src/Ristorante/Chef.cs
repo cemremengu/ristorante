@@ -8,29 +8,21 @@
 
     public class Chef
     {
-        private readonly Manager _manager;
         private readonly Dictionary<string, decimal> _prices;
 
-        public Chef(Dictionary<string, decimal> prices, Manager manager)
+        public Chef(Dictionary<string, decimal> prices)
         {
             _prices = prices;
-            _manager = manager;
         }
 
         public void CookOrder(DocumentMessage order)
         {
             Thread.Sleep(500);
 
-            var totalCost = 0m;
-
             foreach (var item in order.To<ChefOrder>())
             {
                 item.Price = _prices[item.Name];
-
-                totalCost += item.Price*item.Quantity;
             }
-
-            _manager.RecordCost(totalCost);
 
             Console.WriteLine("Cooked the order and notified the manager...");
         }

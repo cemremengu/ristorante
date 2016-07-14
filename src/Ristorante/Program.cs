@@ -12,9 +12,9 @@
 
             var manager = new Manager();
 
-            var chef = new Chef(costs, manager);
+            var chef = new Chef(costs);
 
-            var cashier = new Cashier(prices, manager);
+            var cashier = new Cashier(prices);
 
             var waiter = new Waiter("Cemre", cashier);
 
@@ -29,6 +29,8 @@
                 waiter.DeliverOrder(order);
 
                 cashier.TakePayment(customer);
+
+                manager.RecordOrder(order);
             }
 
             manager.ReportProfit();

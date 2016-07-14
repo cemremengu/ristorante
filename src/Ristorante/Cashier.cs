@@ -9,15 +9,13 @@
     public class Cashier
     {
         private readonly Dictionary<string, decimal> _prices;
-        private readonly Manager _manager;
 
-        public Cashier(Dictionary<string, decimal> prices, Manager manager)
+        private readonly Dictionary<int, CashierOrder> pendingPayments = new Dictionary<int, CashierOrder>();
+
+        public Cashier(Dictionary<string, decimal> prices)
         {
             _prices = prices;
-            _manager = manager;
         }
-
-        private Dictionary<int, CashierOrder> pendingPayments = new Dictionary<int, CashierOrder>();
 
         public void TakePayment(Customer customer)
         {
@@ -26,9 +24,6 @@
             var total = order.Sum(x => x.Cost*x.Quantity);
 
             Console.WriteLine($"Charging the customer on table {order.TableNumber}. Total ${total}");
-
-            _manager.RecordPayment(total);
-
         }
 
         public void ReadyForPayment(DocumentMessage order)
@@ -56,7 +51,7 @@
 
             public IEnumerator<CashierOrderItem> GetEnumerator()
             {
-                var items = (JArray)json[nameof(Items)];
+                var items = (JArray) json[nameof(Items)];
 
                 foreach (JObject item in items)
                 {
@@ -73,8 +68,6 @@
 
         private class CashierOrderItem : DocumentMessage
         {
-
-
             public string Name => Get(nameof(Name)).Value<string>();
 
             public int Quantity => Get(nameof(Quantity)).Value<int>();
