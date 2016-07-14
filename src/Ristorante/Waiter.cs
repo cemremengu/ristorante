@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Newtonsoft.Json.Linq;
 
     public class Waiter
     {
@@ -16,28 +17,87 @@
             Cashier = cashier;
         }
 
-        public Order TakeOrder(Customer customer)
+        public DocumentMessage TakeOrder(Customer customer)
         {
             Console.WriteLine("Taking order from customer...");
 
-            return new Order(Name, customer.TableNumber)
-            {
-                OrderItems =
-                    new List<OrderItem>
-                    {
-                        new OrderItem ("Burger", 1),
-                        new OrderItem ("Milkshake", 1)
-                    }
-            
-            };
+            return new WaiterOrder(Name, customer.TableNumber)
+                .AddOrderItem("Burger", 1)
+                .AddOrderItem("Milkshake", 1);
         }
 
-        public void DeliverOrder(Order order)
+        public void DeliverOrder(DocumentMessage order)
         {
-            Console.WriteLine("Order delivered to table number " + order.TableNumber);
+            var waiterOrder = order.To<WaiterOrder>();
 
-            Cashier.ReadyForPayment(order );
+            Console.WriteLine("Order delivered to table number " + waiterOrder.TableNumber);
+
+            Cashier.ReadyForPayment(order);
 
         }
+
+        private class WaiterOrder : DocumentMessage
+        {
+            public WaiterOrder()
+            {
+            }
+
+            public WaiterOrder(string waiterName, int tableNumber)
+            {
+                WaiterName = waiterName;
+                TableNumber = tableNumber;
+
+                Items = new JArray();
+
+                json[nameof(Items)] = Items;
+            }
+
+            public string WaiterName
+            {
+                get { return Get(nameof(WaiterName)).Value<string>(); }
+
+                private set { Set(nameof(WaiterName), new JValue(value)); }
+            } 
+
+            public int TableNumber
+            {
+                get { return Get(nameof(TableNumber)).Value<int>(); }
+
+                private set { Set(nameof(TableNumber), new JValue(value)); }
+            } 
+
+            private JArray Items { get; }
+
+            public WaiterOrder AddOrderItem(string name, int quantity)
+            {
+                Items.Add(new WaiterOrderItem(name, quantity).AsJson());
+
+                return this;
+            }
+
+            private class WaiterOrderItem : DocumentMessage
+            {
+                public WaiterOrderItem(string name, int quantity)
+                {
+                    Name = name;
+                    Quantity = quantity;
+                }
+
+                public string Name
+                {
+                    get { return Get(nameof(Name)).Value<string>(); }
+
+                    private set { Set(nameof(Name), new JValue(value)); }
+                } // waiter
+
+                public int Quantity
+                {
+                    get { return Get(nameof(Quantity)).Value<int>(); }
+
+                    private set { Set(nameof(Quantity), new JValue(value)); }
+                } // waiter, cashier
+            }
+        }
+
     }
 }
