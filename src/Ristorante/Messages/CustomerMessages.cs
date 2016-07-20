@@ -1,12 +1,21 @@
 ﻿namespace Ristorante.Messages
 {
+    using System;
     using Infrastructure;
 
-    public class ReadyForPayment : Message
+    public class ReadyForPayment : CorrelatedMessage
     {
+        public ReadyForPayment(Guid correlationId) : base(correlationId)
+        {
+            
+        }
     }
 
-    public class MealCompleted : Message
+    public class MealCompleted : CorrelatedMessage
     {
+        public MealCompleted(Guid correlationId) : base(correlationId)
+        {
+        }
+
     }
 }

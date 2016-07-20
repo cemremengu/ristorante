@@ -24,7 +24,6 @@
 
             Console.WriteLine("Order delivered to table number " + waiterOrder.TableNumber);
 
-
             Publisher.Publish(new OrderDelivered(message.Order));
         }
 
@@ -38,7 +37,7 @@
                 .AddOrderItem("Milkshake", 1);
 
 
-            Publisher.Publish(new OrderTaken(order));
+            Publisher.Publish(new OrderTaken(message.Customer.Id, order));
         }
 
 

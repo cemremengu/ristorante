@@ -15,21 +15,23 @@
         {
             _publisher = publisher;
             TableNumber = tableNumber;
+
+            Id = Guid.NewGuid();
         }
 
         public int TableNumber { get; }
 
+        public Guid Id { get; }
+
         public void Handle(MealCompleted message)
         {
-            _publisher.Unsubscribe<OrderDelivered>(this);
-            _publisher.Unsubscribe<ReadyForPayment>(this);
-            _publisher.Unsubscribe<MealCompleted>(this);
+            _publisher.Unsubscribe<OrderDelivered>(Id, this);
+            _publisher.Unsubscribe<ReadyForPayment>(Id, this);
+            _publisher.Unsubscribe<MealCompleted>(Id, this);
         }
 
         public void Handle(OrderDelivered message)
         {
-            //_publisher.Publish(new TakePayment(this));
-
             Console.WriteLine("Nom nom nom...");
         }
 
@@ -40,9 +42,9 @@
 
         public void EnterRestaurant()
         {
-            _publisher.Subscribe<OrderDelivered>(this);
-            _publisher.Subscribe<ReadyForPayment>(this);
-            _publisher.Subscribe<MealCompleted>(this);
+            _publisher.Subscribe<OrderDelivered>(Id, this);
+            _publisher.Subscribe<ReadyForPayment>(Id, this);
+            _publisher.Subscribe<MealCompleted>(Id, this);
 
             _publisher.Publish(new TakeOrder(this));
         }

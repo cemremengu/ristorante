@@ -50,6 +50,14 @@
     <Compile Include="Cashier.cs" />
     <Compile Include="Chef.cs" />
     <Compile Include="Customer.cs" />
+    <Compile Include="Infrastructure\CompetingConsumer.cs" />
+    <Compile Include="Infrastructure\CorrelationManager.cs" />
+    <Compile Include="Infrastructure\PendingWorkLoadBalancer.cs" />
+    <Compile Include="Infrastructure\QueuedHandler.cs" />
+    <Compile Include="Infrastructure\RoundRobinLoadBalancer.cs" />
+    <Compile Include="Infrastructure\ThreadBasedProcessor.cs" />
+    <Compile Include="Kitchen.cs" />
+    <Compile Include="TableManager.cs" />
     <Compile Include="Infrastructure\Dispatcher.cs" />
     <Compile Include="Infrastructure\InMemoryBus.cs" />
     <Compile Include="IRestaurantProcess.cs" />

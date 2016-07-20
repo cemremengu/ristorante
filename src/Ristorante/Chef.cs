@@ -33,7 +33,7 @@
             }
 
 
-            Console.WriteLine("Cooked the order and notified the manager...");
+            Console.WriteLine($"Cooked the order in {_cookingTime}...");
 
             _publish.Publish(new OrderCooked(message.Order));
         }

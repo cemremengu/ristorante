@@ -12,8 +12,13 @@
             var turkishBus = new InMemoryBus();
             var zimbabweBus = new InMemoryBus();
 
-            Configure(turkishBus, new TurkishOrderProcessManager(turkishBus));
-            Configure(zimbabweBus, new ZimbabweProcessManager(zimbabweBus));
+            Configure(turkishBus, new TableManager(
+                turkishBus, 
+                (customerId, publisher) => new TurkishOrderProcessManager(customerId, publisher)));
+
+            Configure(zimbabweBus, new TableManager(
+                zimbabweBus, 
+                (customerId, publisher) => new ZimbabweProcessManager(customerId, publisher)));
 
             OpenRestaurant(turkishBus);
             OpenRestaurant(zimbabweBus);
@@ -31,7 +36,7 @@
 
                 customer.EnterRestaurant();
             }
-
+            Console.ReadLine();
             bus.Publish(new ReportProfit());
         }
 
@@ -42,7 +47,9 @@
 
             var manager = new Manager();
 
-            var chefs = new[] {new Chef(costs, 500, bus), new Chef(costs, 1500, bus)};
+            var chefs = new[] {new Chef(costs, 500, bus), new Chef(costs, 1500, bus), new Chef(costs, 1000, bus), new Chef(costs, 700, bus) };
+        
+            var kitchen = new Kitchen(bus, chefs);
 
             var cashier = new Cashier(prices, bus);
 
@@ -52,7 +59,7 @@
             bus.Subscribe<DeliverOrder>(waiter);
             bus.Subscribe<TakeOrder>(waiter);
 
-            bus.Subscribe(chefs[0]);
+            bus.Subscribe(kitchen);
 
             bus.Subscribe<PaymentReceivable>(cashier);
             bus.Subscribe<TakePayment>(cashier);

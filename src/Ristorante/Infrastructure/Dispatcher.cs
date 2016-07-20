@@ -6,6 +6,8 @@
 
     public class Dispatcher : IHandle<Message>
     {
+        public bool IsEmpty => !_subscriptions.Any();
+
         private readonly Dictionary<Type, List<IMessageHandler>> _subscriptions =
             new Dictionary<Type, List<IMessageHandler>>();
 
@@ -89,7 +91,19 @@
 
 
     public class Message
+    {     
+  
+
+    }
+
+    public class CorrelatedMessage: Message
     {
+        public Guid CorrelationId { get; }
+
+        public CorrelatedMessage(Guid correlationId)
+        {
+            CorrelationId = correlationId;
+        }
     }
 
     public interface IHandle<T> where T : Message
@@ -107,5 +121,9 @@
         void Subscribe<T>(IHandle<T> subscriber) where T : Message;
 
         void Unsubscribe<T>(IHandle<T> subscriber) where T : Message;
+
+        void Subscribe<T>(Guid correlationId, IHandle<T> subscriber) where T : Message;
+
+        void Unsubscribe<T>(Guid correlationId, IHandle<T> subscriber) where T : Message;
     }
 }
