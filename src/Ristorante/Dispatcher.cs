@@ -35,13 +35,12 @@
                 }
 
                 messageType = messageType.GetTypeInfo().BaseType;
+
             } while (messageType != typeof(object));
         }
 
         public void Subscribe<T>(IHandle<T> subscriber) where T : Message
         {
-            var s = new MessageHandler<T>(subscriber);
-
             List<IMessageHandler> handlers;
 
             if (!_subscriptions.TryGetValue(typeof(T), out handlers))
@@ -51,7 +50,7 @@
 
             if (!handlers.Any(x => x.IsSame(subscriber)))
             {
-                handlers = new List<IMessageHandler>(handlers) {s};
+                handlers = new List<IMessageHandler>(handlers) { new MessageHandler<T>(subscriber) };
                 _subscriptions[typeof(T)] = handlers;
             }
         }

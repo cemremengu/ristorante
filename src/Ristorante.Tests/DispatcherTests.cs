@@ -61,7 +61,21 @@
         }
 
         [Fact]
-        public void Should_handle_message()
+        public void Should_handle_inherited_messages()
+        {
+            _dispatcher.Subscribe(_subscriberX);
+            _dispatcher.Subscribe(_subscriberY);
+            _dispatcher.Subscribe(_subscriberZ);
+
+            _dispatcher.Handle(_messageB);
+
+            A.CallTo(() => _subscriberZ.Handle(_messageB)).MustHaveHappened();
+            A.CallTo(() => _subscriberX.Handle(_messageB)).MustHaveHappened();
+            A.CallTo(() => _subscriberY.Handle(_messageB)).MustHaveHappened();
+        }
+
+        [Fact]
+        public void Should_handle_messages()
         {
             _dispatcher.Subscribe(_subscriberX);
             _dispatcher.Subscribe(_subscriberY);
@@ -76,7 +90,6 @@
             _dispatcher.Handle(_messageB);
 
             A.CallTo(() => _subscriberZ.Handle(_messageB)).MustHaveHappened();
-
         }
     }
 }
