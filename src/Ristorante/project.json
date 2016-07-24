@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "dependencies": {
+        "System.Threading.Thread": "4.0.0",
+        "System.Collections.Concurrent": "4.0.12"
+      },
+      "imports": ["dotnet54", "portable-net451+win8"]
+    },
+    "net452": {}
+  }
+}

@@ -6,5 +6,5 @@
 
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Ristorante")]
+[assembly: AssemblyProduct("Ristorante.Demo")]
 [assembly: AssemblyTrademark("")]
