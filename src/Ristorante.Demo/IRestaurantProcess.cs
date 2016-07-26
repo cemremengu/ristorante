@@ -6,7 +6,8 @@
         IHandle<OrderDelivered>,
         IHandle<OrderTaken>,
         IHandle<OrderCooked>,
-        IHandle<PaymentTaken>
+        IHandle<PaymentTaken>,
+        IHandle<FreeDrinkTimeout>
 
     {
     }

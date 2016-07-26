@@ -1,14 +1,15 @@
 ﻿namespace Ristorante
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
 
     public class Dispatcher : IHandle<Message>
     {
-        private readonly Dictionary<Type, List<IMessageHandler>> _subscriptions =
-            new Dictionary<Type, List<IMessageHandler>>();
+        private readonly ConcurrentDictionary<Type, List<IMessageHandler>> _subscriptions =
+            new ConcurrentDictionary<Type, List<IMessageHandler>>();
 
         public bool IsEmpty => !_subscriptions.Any();
 
@@ -110,7 +111,7 @@
         public Guid CorrelationId { get; }
     }
 
-    public interface IHandle<T> where T : Message
+    public interface IHandle<in T> where T : Message
     {
         void Handle(T message);
     }

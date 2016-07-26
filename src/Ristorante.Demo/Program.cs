@@ -13,11 +13,11 @@
 
             Configure(turkishBus, new TableManager(
                 turkishBus,
-                (customerId, publisher) => new TurkishOrderProcessManager(customerId, publisher)));
+                (customerId, tableNumber, publisher) => new TurkishOrderProcessManager(customerId, tableNumber, publisher)));
 
             Configure(zimbabweBus, new TableManager(
                 zimbabweBus,
-                (customerId, publisher) => new ZimbabweProcessManager(customerId, publisher)));
+                (customerId, tableNumber, publisher) => new ZimbabweProcessManager(customerId, tableNumber, publisher)));
 
             OpenRestaurant(turkishBus);
             OpenRestaurant(zimbabweBus);
@@ -41,6 +41,12 @@
 
         private static void Configure(IBus bus, IRestaurantProcess processManager)
         {
+            var timerService = new TimerService(bus);
+
+            bus.Subscribe(timerService);
+
+            new ThreadBasedProcessor(timerService);
+
             var prices = new Dictionary<string, decimal> {{"Burger", 10.0m}, {"Milkshake", 5.0m}};
             var costs = new Dictionary<string, decimal> {{"Burger", 2.75m}, {"Milkshake", 1.25m}};
 
@@ -75,6 +81,8 @@
             bus.Subscribe<OrderTaken>(processManager);
             bus.Subscribe<OrderCooked>(processManager);
             bus.Subscribe<PaymentTaken>(processManager);
+            bus.Subscribe<FreeDrinkTimeout>(processManager);
+
         }
     }
 }

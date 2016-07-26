@@ -8,10 +8,10 @@
     public class TableManager : IRestaurantProcess
     {
         private readonly IBus _bus;
-        private readonly Func<Guid, IPublish, IRestaurantProcess> _processFactory;
+        private readonly Func<Guid, int, IPublish , IRestaurantProcess> _processFactory;
         private readonly Dictionary<int, IRestaurantProcess> _tables;
 
-        public TableManager(IBus bus, Func<Guid, IPublish, IRestaurantProcess> processFactory)
+        public TableManager(IBus bus, Func<Guid, int, IPublish, IRestaurantProcess> processFactory)
         {
             _bus = bus;
             _processFactory = processFactory;
@@ -29,9 +29,10 @@
 
         public void Handle(OrderTaken message)
         {
-            var process = _processFactory(message.CustomerId, _bus);
-
             var tableId = GetTableId(message.Order);
+
+            var process = _processFactory(message.CustomerId, tableId, _bus);
+
 
             _tables.Add(tableId, process);
 
@@ -52,6 +53,11 @@
             _tables[tableId].Handle(message);
         }
 
+        public void Handle(MealCompleted message)
+        {
+            _tables.Remove(message.TableNumber);
+        }
+
         private int GetTableId(DocumentMessage document)
         {
             return document.To<TableOrder>().TableNumber;
@@ -60,6 +66,19 @@
         private class TableOrder : DocumentMessage
         {
             public int TableNumber => Get(nameof(TableNumber)).Value<int>();
+        }
+
+        public void Handle(FreeDrinkTimeout message)
+        {
+            var tableId = message.TableNumber;
+
+            IRestaurantProcess process;
+
+            if (_tables.TryGetValue(tableId, out process))
+            {
+                process.Handle(message);
+            }
+
         }
     }
 }

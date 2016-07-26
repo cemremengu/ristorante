@@ -6,7 +6,8 @@
     public class Customer :
         IHandle<OrderDelivered>,
         IHandle<ReadyForPayment>,
-        IHandle<MealCompleted>
+        IHandle<MealCompleted>,
+        IHandle<FreeDrink>
     {
         private readonly IBus _publisher;
 
@@ -27,6 +28,8 @@
             _publisher.Unsubscribe<OrderDelivered>(Id, this);
             _publisher.Unsubscribe<ReadyForPayment>(Id, this);
             _publisher.Unsubscribe<MealCompleted>(Id, this);
+            _publisher.Unsubscribe<FreeDrink>(Id, this);
+
         }
 
         public void Handle(OrderDelivered message)
@@ -44,8 +47,14 @@
             _publisher.Subscribe<OrderDelivered>(Id, this);
             _publisher.Subscribe<ReadyForPayment>(Id, this);
             _publisher.Subscribe<MealCompleted>(Id, this);
+            _publisher.Subscribe<FreeDrink>(Id, this);
 
             _publisher.Publish(new TakeOrder(this));
+        }
+
+        public void Handle(FreeDrink message)
+        {
+            Console.WriteLine("Enjoying a free drink!!");
         }
     }
 }

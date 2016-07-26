@@ -6,12 +6,14 @@
     public class ZimbabweProcessManager : IRestaurantProcess
     {
         private readonly Guid _customerId;
+        private readonly int _tableNumber;
 
-        public ZimbabweProcessManager(Guid customerId, IPublish publisher)
+        public ZimbabweProcessManager(Guid customerId, int tableNumber, IPublish publisher)
         {
             Publisher = publisher;
 
             _customerId = customerId;
+            _tableNumber = tableNumber;
         }
 
         private IPublish Publisher { get; }
@@ -32,12 +34,17 @@
 
         public void Handle(OrderDelivered message)
         {
-            Publisher.Publish(new MealCompleted(_customerId));
+            Publisher.Publish(new MealCompleted(_customerId, _tableNumber));
         }
 
         public void Handle(PaymentTaken message)
         {
             Publisher.Publish(new CookOrder(message.Order));
+        }
+
+        public void Handle(FreeDrinkTimeout message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

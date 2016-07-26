@@ -11,7 +11,18 @@
 
     public class MealCompleted : CorrelatedMessage
     {
-        public MealCompleted(Guid correlationId) : base(correlationId)
+        public int TableNumber { get; }
+
+        public MealCompleted(Guid correlationId, int tableNumber) : base(correlationId)
+        {
+            TableNumber = tableNumber;
+        }
+
+    }
+
+    public class FreeDrink : CorrelatedMessage
+    {
+        public FreeDrink(Guid correlationId) : base(correlationId)
         {
         }
     }
